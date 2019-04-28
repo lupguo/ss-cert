@@ -23,30 +23,6 @@ openssl req ...
 openssl ca ...
 ...
 
-## 项目目录
-
-```
-$ tree
-.
-├── README.md
-├── cacert.pem
-├── cakey.pem
-├── csr
-│   ├── openssl-server.cnf
-│   ├── server-csr.pem
-│   └── server-key.pem
-├── db.txt
-├── db.txt.attr
-├── db.txt.attr.old
-├── db.txt.old
-├── openssl-ca.cnf
-├── serial.txt
-├── serial.txt.old
-└── sign_cert
-    ├── 01.pem
-    └── 02.pem
-```
-
 ## 创建CA Certificate
 
 ```
@@ -67,13 +43,13 @@ openssl x509  -in cacert.pem -noout -text
 openssl req -config openssl-server.cnf -newkey rsa:2048 -sha256 -nodes -keyout server-key.pem -out server-csr.pem
 
 // 方式2，直接快速创建服务器证书请求
-openssl req -newkey rsa:2048 -sha256 -nodes -keyout server-key.pem -out server-csr.pem \
+openssl req -newkey rsa:2048 -sha256 -nodes -keyout ./csr/server-key.pem -out ./csr/server-csr.pem \
     -subj "/C=CN/ST=GD/L=ShenZhen/O=GlobaleGrow Inc./OU=Tech Development./CN=TK Server Development/emailAddress=tkstorm1988@gmail.com" \
     -reqexts SAN -extensions SAN \
-    -config <(cat /etc/ssl/openssl.cnf <(printf "\n[SAN]\nsubjectAltName=IP:127.0.0.1,DNS:localhost,DNS:www.tkstorm.cc,DNS:tkstorm.cc"))
+    -config <(cat /etc/ssl/openssl.cnf <(printf "\n[SAN]\nsubjectAltName=IP:127.0.0.1,DNS:localhost,DNS:www.tkstorm.cc,DNS:tkstorm.cc,DNS:::1"))
 
 // 查看生成的证书请求
-openssl req -in server-csr.pem -text -noout
+openssl req -in ./csr/server-csr.pem -text -noout
 
 // 注意以下SAN部分的信息
 X509v3 Subject Alternative Name:
@@ -102,6 +78,31 @@ openssl ca -config openssl-ca.cnf -policy signing_policy -extensions signing_req
 
 // 查看证书
 openssl x509 -in ./sign_cert/02.pem -text -noout
+```
+
+## 项目目录
+一切就绪后，目录如下
+
+```
+$ tree
+.
+├── README.md
+├── cacert.pem
+├── cakey.pem
+├── csr
+│   ├── openssl-server.cnf
+│   ├── server-csr.pem
+│   └── server-key.pem
+├── db.txt
+├── db.txt.attr
+├── db.txt.attr.old
+├── db.txt.old
+├── openssl-ca.cnf
+├── serial.txt
+├── serial.txt.old
+└── sign_cert
+    ├── 01.pem
+    └── 02.pem
 ```
 
 ## 更多细节

@@ -1,3 +1,3 @@
-./db.txt*
-./serial.txt*
+db.txt*
+serial.txt*
 *.pem
