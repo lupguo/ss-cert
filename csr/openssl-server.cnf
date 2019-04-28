@@ -1,0 +1,54 @@
+[ req ]
+default_bits		= 2048
+default_md		    = sha256
+distinguished_name	= server_distinguished_name
+attributes		    = server_attributes
+req_extensions      = server_extensions
+
+[ server_distinguished_name ]
+countryName			= Country Name (2 letter code)
+countryName_default = CN
+
+stateOrProvinceName	        = State or Province Name (full name)
+stateOrProvinceName_default = GD 
+
+localityName                = Locality Name (eg, city)
+localityName_default        = ShenZhen
+
+organizationName            = Organization Name (eg, company)
+organizationName_default    = GlobaleGrow Inc.
+
+organizationalUnitName         = Organizational Unit (eg, division)
+organizationalUnitName_default = TKSTORM.COM
+
+commonName         = Common Name (e.g. server FQDN or YOUR name)
+commonName_default = Tech Development.
+
+emailAddress         = Email Address
+emailAddress_default = tkstorm1988@gmail.com
+
+[ server_attributes ]
+challengePassword		    = A challenge password
+challengePassword_min		= 4
+challengePassword_max		= 20
+
+[ server_extensions ]
+subjectKeyIdentifier   = hash
+basicConstraints       = CA:FALSE
+keyUsage               = digitalSignature, keyEncipherment
+subjectAltName         = @alternate_names
+nsComment              = "OpenSSL Generated Certificate"
+
+[ alternate_names ] 
+DNS.1  = tkstorm.cc
+DNS.2  = www.tkstorm.cc
+DNS.3  = mail.tkstorm.cc
+
+# Add these if you need them. But usually you don't want them or
+#   need them in production. You may need them for development.
+DNS.5       = localhost
+DNS.6       = localhost.localdomain
+DNS.7       = 127.0.0.1
+
+# IPv6 localhost
+DNS.8     = ::1
