@@ -84,7 +84,7 @@ $ mkdir sign_cert
 $ openssl ca -config openssl-ca.cnf -policy signing_policy -extensions signing_req -infiles ./sign_csr/server-csr.pem
 
 // 查看证书
-openssl x509 -in ./sign_cert/02.pem -text -noout
+$ openssl x509 -in ./sign_cert/02.pem -text -noout
 ```
 
 ## 项目目录

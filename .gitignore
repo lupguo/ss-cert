@@ -1,3 +1,5 @@
+.idea/
+*.swp
 db.txt*
 serial.txt*
 *.pem
