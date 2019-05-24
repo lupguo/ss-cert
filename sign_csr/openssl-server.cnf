@@ -19,7 +19,7 @@ organizationName            = Organization Name (eg, company)
 organizationName_default    = GlobaleGrow Inc.
 
 organizationalUnitName         = Organizational Unit (eg, division)
-organizationalUnitName_default = TKSTORM.COM
+organizationalUnitName_default = Tech Team.
 
 commonName         = Common Name (e.g. server FQDN or YOUR name)
 commonName_default = Tech Development.

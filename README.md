@@ -27,31 +27,35 @@ openssl ca ...
 
 ```
 // 基于config生成CA证书
-openssl req -x509 -config openssl-ca.cnf -nodes -newkey rsa:2048 -days 3650 \
+$ cd ca_cert
+$ openssl req -x509 -config ../openssl-ca.cnf -nodes -newkey rsa:2048 -days 3650 \
     -keyout cakey.pem -out cacert.pem
 
 // 检测生成的CA证书
-openssl x509  -in cacert.pem -noout -text
+$ openssl x509  -in cacert.pem -noout -text
 ```
 
-## 创建CSR 
+## 创建CSR(证书请求)
 
-在csr目录中，执行下列操作：
+先回到根目录，在csr目录中，执行下列操作：
 
 ```
-// 方式1，基于openssl-server.cnf配置创建服务器证书请求
-openssl req -config openssl-server.cnf -newkey rsa:2048 -sha256 -nodes -keyout server-key.pem -out server-csr.pem
+// 方式1，基于openssl-server.cnf证书请求模板配置文件, 创建预申请的服务器证书请求
+$ cd ./sign_csr/
+$ openssl req -config openssl-server.cnf -newkey rsa:2048 -nodes -keyout server-key.pem -out server-csr.pem
 
-// 方式2，直接快速创建服务器证书请求
-openssl req -newkey rsa:2048 -sha256 -nodes -keyout ./csr/server-key.pem -out ./csr/server-csr.pem \
+// 方式2，直接快速创建服务器证书请求（配置中以及有很多基本信息的配置了，比如信息摘要摘要算法等）
+$ openssl req -newkey rsa:2048 -nodes -keyout ./sign_csr/server-key.pem -out ./sign_csr/server-csr.pem \
     -subj "/C=CN/ST=GD/L=ShenZhen/O=GlobaleGrow Inc./OU=Tech Development./CN=TK Server Development/emailAddress=tkstorm1988@gmail.com" \
     -reqexts SAN -extensions SAN \
     -config <(cat /etc/ssl/openssl.cnf <(printf "\n[SAN]\nsubjectAltName=IP:127.0.0.1,DNS:localhost,DNS:www.tkstorm.cc,DNS:tkstorm.cc,DNS:::1"))
 
 // 查看生成的证书请求
-openssl req -in ./csr/server-csr.pem -text -noout
+$ openssl req -in ./server-csr.pem -text -noout
+```
 
-// 注意以下SAN部分的信息
+### SAN部分的信息
+```
 X509v3 Subject Alternative Name:
     DNS:tkstorm.cc, DNS:www.tkstorm.cc, DNS:mail.tkstorm.cc
 ```
@@ -63,18 +67,21 @@ X509v3 Subject Alternative Name:
 回到ca配置文件所在目录：
 
 ```
-touch ./db.txt
+$ touch ./db/db.txt
 
-echo '01' > serial.txt
+$ echo '01' > ./db/serial.txt
 
-mkdir sign_cert
+// 证书生成的目录
+$ mkdir sign_cert
 ```
 
-### 签发证书
+### 证书签发
+
+基于配置文件`openssl-ca.cnf`（其中已设定了CA证书+私钥等信息），选择签发策略，对创建的证书请求进行证书签发
 
 ```
 // 签发服务器证书
-openssl ca -config openssl-ca.cnf -policy signing_policy -extensions signing_req -infiles ./csr/server-csr.pem
+$ openssl ca -config openssl-ca.cnf -policy signing_policy -extensions signing_req -infiles ./sign_csr/server-csr.pem
 
 // 查看证书
 openssl x509 -in ./sign_cert/02.pem -text -noout
@@ -82,27 +89,27 @@ openssl x509 -in ./sign_cert/02.pem -text -noout
 
 ## 项目目录
 一切就绪后，目录如下
-
 ```
+/data/github.com/ss-cert on  master! ⌚ 13:13:13
 $ tree
 .
 ├── README.md
-├── cacert.pem
-├── cakey.pem
-├── csr
-│   ├── openssl-server.cnf
-│   ├── server-csr.pem
-│   └── server-key.pem
-├── db.txt
-├── db.txt.attr
-├── db.txt.attr.old
-├── db.txt.old
-├── openssl-ca.cnf
-├── serial.txt
-├── serial.txt.old
-└── sign_cert
-    ├── 01.pem
-    └── 02.pem
+├── ca_cert
+│   ├── cacert.pem
+│   └── cakey.pem
+├── db
+│   ├── db.txt
+│   ├── db.txt.attr
+│   ├── db.txt.old
+│   ├── serial.txt
+│   └── serial.txt.old
+├── openssl-ca.cnf  ---- ca sign config file
+├── sign_cert
+│   └── 01.pem      ---- new signed certificates
+└── sign_csr
+    ├── openssl-server.cnf  ---- server sign request config file 
+    ├── server-csr.pem
+    └── server-key.pem
 ```
 
 ## 更多细节
