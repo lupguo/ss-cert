@@ -3,3 +3,5 @@
 db.txt*
 serial.txt*
 *.pem
+.DS_Store
+ca_cert/cacert.p12

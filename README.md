@@ -70,13 +70,11 @@ X509v3 Subject Alternative Name:
 $ touch ./db/db.txt
 
 $ echo '01' > ./db/serial.txt
-
-// 证书生成的目录
-$ mkdir sign_cert
 ```
 
 ### 证书签发
 
+#### 方式1，基于openssl ca命令+配置(推荐)
 基于配置文件`openssl-ca.cnf`（其中已设定了CA证书+私钥等信息），选择签发策略，对创建的证书请求进行证书签发
 
 ```
@@ -85,6 +83,16 @@ $ openssl ca -config openssl-ca.cnf -policy signing_policy -extensions signing_r
 
 // 查看证书
 $ openssl x509 -in ./sign_cert/02.pem -text -noout
+```
+
+#### 方式2，基于openssl x509命令签发
+
+```
+// 签发 (./sign_cert/01.pem为签发的证书)
+$ openssl x509 -req -in ./sign_csr/server-csr.pem -CA ./ca_cert/cacert.pem -CAkey ./ca_cert/cakey.pem -create_serial -out ./sign_cert/01.pem
+// 验证
+$ openssl verify -CAfile ./ca_cert/cacert.pem -verbose ./sign_cert/01.pem
+./sign_cert/01.pem: OK
 ```
 
 ## 项目目录
@@ -110,6 +118,31 @@ $ tree
     ├── openssl-server.cnf  ---- server sign request config file 
     ├── server-csr.pem
     └── server-key.pem
+```
+
+### 将CA证书生成的pkcs #12格式(捆绑私钥和公钥)
+> 在密码学中，PKCS #12 定义了一种存档文件格式，用于实现存储许多加密对象在一个单独的文件中。通常用它来打包一个私钥及有关的X.509 证书，或者打包信任链的全部项目。 一个 PKCS #12 文件通常是被加密的，同时单独存在。其被称作"安全包裹"的内部存储容器通常同时也被加密及单独存在。
+
+```
+$ openssl pkcs12 -in cacert.pem -inkey cakey.pem -export -out cacert.p12
+```
+
+### 基于CA已有的私钥，生成新的CA证书（应对证书续签问题）
+```
+// 基于配置和已有的cakey，生成一个CA CSR
+openssl req -new -config ../openssl-ca.cnf -nodes -key cakey.pem -out cacsr.pem
+
+// 签发自签名证书
+$ openssl x509 -req -in cacsr.pem -signkey cakey.pem -out cacert.pem
+Signature ok
+subject=/C=CN/ST=GD/L=ShenZhen/O=NGTK Inc./OU=NGTK ORG (tkstrom.com)/CN=TK.ROOT CA/emailAddress=tkstorm1988@gmail.com
+Getting Private key
+
+// 查看证书时间
+$ openssl x509 -in cacert.pem -text
+
+// 重新生成pkcs#12证书格式
+$ openssl pkcs12 -in cacert.pem -inkey cakey.pem -export -out cacert.p12
 ```
 
 ## 更多细节
