@@ -100,6 +100,8 @@ $ openssl verify -CAfile ./ca_cert/cacert.pem -verbose ./sign_cert/01.pem
 // 对比openssl md5的差异
 openssl x509 -noout -modulus -in tkstorm-cert.pem|openssl md5; \
 openssl rsa -noout -modulus -in tkstorm-key.pem | openssl md5
+// csr证书请求也可以基于类似的方式
+openssl req -noout -modulus -in server.csr | openssl md5
 ```
 
 ## 项目目录
