@@ -18,13 +18,16 @@ db_dir        = $base_dir/db
 ca_cert_dir   = $base_dir/ca_cert
 sign_cert_dir = $base_dir/sign_cert
 
+# CA
 certificate   = $ca_cert_dir/cacert.pem   # The CA certifcate
 private_key   = $ca_cert_dir/cakey.pem    # The CA private key
+
+# Sign Cert
 new_certs_dir = $sign_cert_dir            # Location for new certs after signing
 
+# Sing Opt
 database      = $db_dir/db.txt            # Database index file
 serial        = $db_dir/serial.txt      # The next serial number to use in hex
-
 unique_subject = no  # Set to 'no' to allow creation of
                      # several certificates with same subject.
 

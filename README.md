@@ -95,6 +95,13 @@ $ openssl verify -CAfile ./ca_cert/cacert.pem -verbose ./sign_cert/01.pem
 ./sign_cert/01.pem: OK
 ```
 
+### 证书和私钥验证
+```
+// 对比openssl md5的差异
+openssl x509 -noout -modulus -in tkstorm-cert.pem|openssl md5; \
+openssl rsa -noout -modulus -in tkstorm-key.pem | openssl md5
+```
+
 ## 项目目录
 一切就绪后，目录如下
 ```
